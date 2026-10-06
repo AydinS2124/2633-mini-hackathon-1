@@ -1,228 +1,139 @@
 import readwrite
+
+# Add task looks like this:
+# {"name": "Chapter 3 problems", 
+# "type": "Assignment",
+# "due": "2026-10-10", 
+# "urgency": 4, 
+# "difficulty": 3}
+
 from datetime import datetime
 
-
-# Tasks are stored in a dictionary.
-# Example:
-# {
-#     "Chapter 3 problems": {
-#         "name": "Chapter 3 problems",
-#         "type": "Assignment",
-#         "due": "2026-10-10",
-#         "urgency": 4,
-#         "difficulty": 3
-#     }
-# }
-
-DATE_FORMAT = "%Y-%m-%d"
-
+DATE_FORMAT = "%Y-%m-%d"  # dates will look like this: 2026-10-10
 TASK_TYPES = ["Lab", "Assignment", "Quiz", "Test"]
 
 
 def normalize_command(text):
-    # Remove spaces and capitals:
-    # "Task List" becomes "tasklist"
+    # Remove spaces and capitals: "Task List" becomes "tasklist"
     return "".join(text.split()).lower()
 
 
 def format_task(task):
-    # Turn a task into one line of text for printing
     due = task["due"] if task["due"] else "no due date"
-
     return (
         f"[{task['type']}] {task['name']} | due {due} | "
-        f"urgency {task['urgency']}/5 | "
-        f"difficulty {task['difficulty']}/5"
+        f"urgency {task['urgency']}/5 | difficulty {task['difficulty']}/5"
     )
 
 
 def is_valid_date(text):
-    # Check that the date is real and typed as YYYY-MM-DD
+    # Check the date is real and typed as YYYY-MM-DD
     try:
         datetime.strptime(text, DATE_FORMAT)
         return True
-
     except ValueError:
         return False
 
 
 def ask_rating(prompt):
-    # Keep asking until the user enters a number from 1 to 5
+    # Keep asking until we get a number from 1 to 5
     while True:
-
         answer = input(prompt).strip()
-
-        if answer.isdigit():
-            number = int(answer)
-
-            if 1 <= number <= 5:
-                return number
-
+        if answer.isdigit() and 1 <= int(answer) <= 5:
+            return int(answer)
         print("Please enter a number from 1 to 5.")
 
 
 def ask_task_type():
-    # Keep asking until the user chooses a valid task type
+    # Keep asking until the user picks Lab, Assignment, Quiz or Test
     options = ", ".join(TASK_TYPES)
-
     while True:
-
-        answer = normalize_command(
-            input(f"Task type ({options}): ")
-        )
-
+        answer = normalize_command(input(f"Task type ({options}): "))
         for task_type in TASK_TYPES:
-
             if answer == task_type.lower():
                 return task_type
-
         print(f"Please choose one of: {options}.")
 
-
-def sort_key(task):
-    # Sort by:
-    # 1. Difficulty - highest first
-    # 2. Urgency - highest first
-    # 3. Due date - earliest first
-
-    due = task["due"] if task["due"] else "9999-12-31"
-
-    return (
-        -task["difficulty"],
-        -task["urgency"],
-        due
-    )
-
-
-def sorted_tasks(tasks):
-    # Return tasks as a sorted list without changing the dictionary
-    return sorted(
-        tasks.values(),
-        key=sort_key
-    )
-
-
-# ------------------------------------------------
-# LIST TASKS
-# ------------------------------------------------
+# - Task List -
 
 def show_tasks(tasks):
-
+    # Nothing to show if the list is empty
     if not tasks:
         print("\nNo tasks yet.")
         return
-
-    print("\nTask List (hardest and most urgent first):\n")
-
-    for details in sorted_tasks(tasks):
-
-        due = details["due"] if details["due"] else "none"
-
-        print(
-            f"Task: {details['name']:<20} | "
-            f"Type: {details['type']:<10} | "
-            f"Due: {due:<10} | "
-            f"Urgency: {details['urgency']:<2} | "
-            f"Difficulty: {details['difficulty']:<2}"
-        )
+    # Print each task with a number, starting at 1
+    print("\nTask List:\n")
+    for name, details in tasks.items():
+        print(f"Task: {name:<20} | Type: {details.get('type'):<10} | Due: {details.get('due'):<10} | Urgency: {details.get('urgency'):<2} | Difficulty: {details.get('difficulty'):<2}")
+"""
+    # Put the most important tasks at the top
+    sort_tasks(tasks)
+"""
 
 
-# ------------------------------------------------
-# ADD TASK
-# ------------------------------------------------
+
+# - Add Task -
 
 def add_task(tasks):
+    # Ask for the task name
+    name = input("\nAdd Task (enter task name): ").strip()
 
-    # Ask for task name
-    name = input(
-        "\nAdd Task (enter task name): "
-    ).strip()
-
-    # Do not allow blank names
+    # Don't allow a blank name
     if name == "":
         print("\nTask name can't be empty.")
         return
-
-    # Check whether task already exists
+    
+    # Check if task already exists, determines whether or not to overwrite said task, add a different task, or exit the add task option
     if name in tasks:
-
-        overwrite = input(
-            f"\n{name} already exists in the task list."
-            "\nWould you like to update the task? [Y/N]\n\n"
-        )
-
-        if overwrite.strip().lower() == "y":
-            print("\nUpdating task...")
-
-        else:
-
-            different_task = input(
-                "Would you like to add a different task? [Y/N]\n\n"
-            )
-
-            if different_task.strip().lower() == "y":
-                add_task(tasks)
-
+            overwrite = input(f"{name} already exists in the task list."
+                              "\nWould you like to update the task? [Y/N]\n\n")
+            if (overwrite.strip().lower() == 'y'):
+                print("\nContinuing...")
             else:
-                print("\nLeaving add task operation.")
+                overwrite = input(f"Would you like to add a different task? [Y/N]\n\n")
+                if (overwrite.strip().lower() == 'y'):
+                    add_task()
+                else:
+                    print("Leaving add task operation.")
+                    return
 
-            return
-
-    # Ask for task type
+    # Ask what kind of task it is
     task_type = ask_task_type()
 
-    # Ask for due date
+    # Ask for the due date (optional, Enter skips it)
     due = None
-
     while True:
-
         due_input = input(
             "Due date (YYYY-MM-DD), or press Enter to skip: "
         ).strip()
 
         if due_input == "":
             break
-
         if is_valid_date(due_input):
             due = due_input
             break
+        print("Invalid date. Use YYYY-MM-DD, for example 2026-10-10.")
 
-        print(
-            "Invalid date. Use YYYY-MM-DD, "
-            "for example 2026-10-10."
-        )
+    # Ask for urgency and difficulty, both 1 to 5
+    urgency = ask_rating("Urgency (1 = low, 5 = high): ")
+    difficulty = ask_rating("Difficulty (1 = low, 5 = high): ")
 
-    # Ask for urgency and difficulty
-    urgency = ask_rating(
-        "Urgency (1 = low, 5 = high): "
-    )
-
-    difficulty = ask_rating(
-        "Difficulty (1 = low, 5 = high): "
-    )
-
-    # Create task dictionary
+    # Build the task and add it to the list
     task = {
         "name": name,
         "type": task_type,
         "due": due,
         "urgency": urgency,
-        "difficulty": difficulty
+        "difficulty": difficulty,
     }
-
-    # Add/update task
+    
     tasks[name] = task
 
-    print(f"\nAdded: {format_task(task)}")
-
-    # Show updated list
+    # Save the list to the text file (Parker's function)
     show_tasks(tasks)
 
-
-# ------------------------------------------------
-# COMPLETE TASK
-# ------------------------------------------------
-
+    print(f"\nAdded: {format_task(task)}")
+    
 def complete_task(tasks):
 
     if len(tasks) == 0:
@@ -230,31 +141,16 @@ def complete_task(tasks):
         return
 
     show_tasks(tasks)
+    task = input("\nComplete Task (enter task name exactly): ")
 
-    task_name = input(
-        "\nComplete Task (enter task name exactly): "
-    ).strip()
-
-    if task_name in tasks:
-
-        completed_task = tasks.pop(task_name)
-
-        # Save updated dictionary
+    if task in tasks:
+        completed_task = tasks.pop(task)
         readwrite.update_tasks(tasks)
-
-        print(
-            f"\nCompleted and removed: "
-            f"{format_task(completed_task)}"
-        )
-
+        print(f"\nCompleted and removed: {completed_task}")
     else:
-
-        leave = input(
-            "\nInvalid task."
-            "\nWould you like to exit Complete Task? [Y/N]:\n\n"
-        )
-
-        if leave.strip().lower() == "y":
+        exit = input("\nInvalid task, would you like to exit complete task? [Y/N]:\n\n")
+        
+        if(input.strip().lower() == 'y'):
             return
-
-        complete_task(tasks)
+        else:
+            complete_task()

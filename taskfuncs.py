@@ -107,8 +107,6 @@ def add_task(tasks):
             "Due date (YYYY-MM-DD): "
         ).strip()
 
-        if due_input == "":
-            break
         if is_valid_date(due_input):
             due = due_input
             break

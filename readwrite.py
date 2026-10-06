@@ -2,13 +2,13 @@ import json
 from pathlib import Path
 from platformdirs import user_data_dir
 
-PROGRAM_NAME = "Taskware"
+PROGRAM_NAME = "TaskWare"
 
 # Find the file path for specific OS
 data_dir = Path(user_data_dir(PROGRAM_NAME))
 
 # Make the directory the file path does not already exist
-data_dir.mkdir(parents = True, exists_ok = True)
+data_dir.mkdir(parents = True, exist_ok = True)
 
 # Define the file path for saved task data
 data_file_path = data_dir / "tasks.json"
@@ -21,8 +21,8 @@ def update_tasks(tasks_dict):
 
 # Opens tasks.json file to read and returns the saved data as a dictionary. Returns empty dictionary if there is no saved data
 def load_tasks():
-    if not data_file_path.exists:
+    if (not data_file_path.exists()):
         return {}
 
-    with open(data_file_path, 'r', encoding = "utc-8") as f:
+    with open(data_file_path, 'r', encoding = "utf-8") as f:
         return json.load(f)

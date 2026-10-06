@@ -1,3 +1,5 @@
+import readwrite
+
 # Add task looks like this:
 # {"name": "Chapter 3 problems", 
 # "type": "Assignment",
@@ -53,7 +55,7 @@ def ask_task_type():
                 return task_type
         print(f"Please choose one of: {options}.")
 
-
+""""
 def sort_key(task):
     # Decides the order: difficulty, then urgency, then due date
     # The minus sign puts the biggest number first
@@ -65,23 +67,24 @@ def sort_key(task):
 def sort_tasks(tasks):
     # Sort the real list, so task numbers match what is printed
     tasks.sort(key=sort_key)
-
+"""
 
 # - Task List -
 
 def show_tasks(tasks):
     # Nothing to show if the list is empty
-    if len(tasks) == 0:
+    if not tasks:
         print("\nNo tasks yet.")
         return
-
+    # Print each task with a number, starting at 1
+    print("\nTask List:\n")
+    for name, details in tasks.items():
+        print(f"Task: {name:<20} | Type: {details.get('type'):<10} | Due: {details.get('due'):<10} | Urgency: {details.get('urgency'):<2} | Difficulty: {details.get('difficulty'):<2}")
+"""
     # Put the most important tasks at the top
     sort_tasks(tasks)
+"""
 
-    # Print each task with a number, starting at 1
-    print("\nTask List (hardest and most urgent first):")
-    for number, task in enumerate(tasks, start=1):
-        print(f"  {number}. {format_task(task)}")
 
 
 # - Add Task -
@@ -93,10 +96,21 @@ def add_task(tasks):
     # Don't allow a blank name
     if name == "":
         print("\nTask name can't be empty.")
-        return True
+        return
     
-    if name == "exit":
-        return False
+    # Check if task already exists, determines whether or not to overwrite said task, add a different task, or exit the add task option
+    if name in tasks:
+            overwrite = input(f"{name} already exists in the task list."
+                              "\nWould you like to update the task? [Y/N]\n\n")
+            if (overwrite.strip().lower() == 'y'):
+                print("\nContinuing...")
+            else:
+                overwrite = input(f"Would you like to add a different task? [Y/N]\n\n")
+                if (overwrite.strip().lower() == 'y'):
+                    add_task()
+                else:
+                    print("Leaving add task operation.")
+                    return
 
     # Ask what kind of task it is
     task_type = ask_task_type()
@@ -127,30 +141,31 @@ def add_task(tasks):
         "urgency": urgency,
         "difficulty": difficulty,
     }
-    tasks.append(task)
-    sort_tasks(tasks)
+    
+    tasks[name] = task
 
     # Save the list to the text file (Parker's function)
     show_tasks(tasks)
 
     print(f"\nAdded: {format_task(task)}")
-    return True
-
-def main():
-
-    print("\n""#######                      #     #\n"                     
-    "   #      ##    ####  #    # #  #  #   ##   #####  ######\n" 
-    "   #     #  #  #      #   #  #  #  #  #  #  #    # #\n"      
-    "   #    #    #  ####  ####   #  #  # #    # #    # #####\n"  
-    "   #    ######      # #  #   #  #  # ###### #####  #\n"     
-    "   #    #    # #    # #   #  #  #  # #    # #   #  #\n"      
-    "   #    #    #  ####  #    #  ## ##  #    # #    # ######\n")
     
-    inputs = []
-    flag = True
-    index = 0
-    while(flag):
+def complete_task(tasks):
 
-        flag = add_task(inputs)
+    if len(tasks) == 0:
+        print("\nNo tasks to complete.")
+        return
 
-main()
+    show_tasks(tasks)
+    task = input("\nComplete Task (enter task name exactly): ")
+
+    if task in tasks:
+        completed_task = tasks.pop(task)
+        readwrite.update_tasks(tasks)
+        print(f"\nCompleted and removed: {completed_task}")
+    else:
+        exit = input("\nInvalid task, would you like to exit complete task? [Y/N]:\n\n")
+        
+        if(input.strip().lower() == 'y'):
+            return
+        else:
+            complete_task()

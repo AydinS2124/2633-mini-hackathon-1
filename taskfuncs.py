@@ -95,8 +95,12 @@ def add_task(tasks):
 
     # Don't allow a blank name
     if name == "":
-        print("\nTask name can't be empty.")
-        return
+        answer = input("\nTask name can't be empty. Would you like to try again? [Y/N]\n\n")
+        
+        if(answer.strip().lower() == 'y'):
+            add_task()
+        else:
+            return
     
     # Check if task already exists, determines whether or not to overwrite said task, add a different task, or exit the add task option
     if name in tasks:

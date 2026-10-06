@@ -1,4 +1,5 @@
-
+import SherwinHack1
+import readwrite
 
 # Complete Task + Exit
 # -----------------------------
@@ -9,7 +10,7 @@ def complete_task(tasks):
         print("\nNo tasks to complete.")
         return
 
-    show_tasks(tasks)
+    SherwinHack1.show_tasks(tasks)
 
     try:
         task_number = int(
@@ -20,7 +21,7 @@ def complete_task(tasks):
 
             completed_task = tasks.pop(task_number - 1)
 
-            save_tasks(tasks)
+            readwrite.update_tasks(tasks)
 
             print(f"\nCompleted and removed: {completed_task}")
 

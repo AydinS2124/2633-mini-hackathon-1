@@ -104,7 +104,7 @@ def add_task(tasks):
     due = None
     while True:
         due_input = input(
-            "Due date (YYYY-MM-DD), or press Enter to skip: "
+            "Due date (YYYY-MM-DD): "
         ).strip()
 
         if due_input == "":

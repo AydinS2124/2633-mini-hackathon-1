@@ -1,43 +1,43 @@
 
 
-# Complete Task 
-# -----------------------------
+# # Complete Task 
+# # -----------------------------
 
-def complete_task(tasks):
+# # def complete_task(tasks):
 
-    if len(tasks) == 0:
-        print("\nNo tasks to complete.")
-        return
+#     # if len(tasks) == 0:
+#         print("\nNo tasks to complete.")
+#         return
 
-    show_tasks(tasks)
-
-
+#     show_tasks(tasks)
 
 
 
-    try:
-        task_number = int(
-            input("\nComplete Task (enter task number): ")
-        )
 
-        if 1 <= task_number <= len(tasks):
 
-            completed_task = tasks.pop(task_number - 1)
+#     try:
+#         task_number = int(
+#             input("\nComplete Task (enter task number): ")
+#         )
 
-            save_tasks(tasks)
+#         if 1 <= task_number <= len(tasks):
 
-            print(f"\nCompleted and removed: {completed_task}")
+#             completed_task = tasks.pop(task_number - 1)
 
-        else:
-            print("\nInvalid task number.")
+#             save_tasks(tasks)
 
-    except ValueError:
-        print("\nPlease enter a valid number.")
+#             print(f"\nCompleted and removed: {completed_task}")
 
-#exit function
-z
-def exit_program():
-    print("\nExiting Task Checklist. Goodbye!")
-    return False
+#         else:
+#             print("\nInvalid task number.")
+
+#     except ValueError:
+#         print("\nPlease enter a valid number.")
+
+# #exit function
+# z
+# def exit_program():
+#     print("\nExiting Task Checklist. Goodbye!")
+#     return False
 
 
